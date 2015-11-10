@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -exu
+
+# TODO: move this out of 'meta' tests (it's stable as long as origin doesn't change)
+
+# checks if the commits referenced by submodules are included in their 'master'
+
+# make sure all submodules are checked out
+# WARNING: test is false-positive without this:
+git submodule update --init --recursive
+
+git submodule foreach --recursive \
+  'git rev-list origin/HEAD | grep -q "^$(git rev-parse HEAD)$"'

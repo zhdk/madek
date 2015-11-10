@@ -1,0 +1,12 @@
+test:
+  body: |
+    set -eux
+    ruby -v
+    bundle exec rspec $CIDER_CI_TASK_FILE
+  start-when: # this must a map, not array, so it can be extended
+    create-database:
+      script: create-database
+    start-vnc:
+      script: start-xvnc
+    setup-madek:
+      script: setup-madek

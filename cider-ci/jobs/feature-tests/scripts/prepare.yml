@@ -1,0 +1,10 @@
+bundle:
+  exclusive-executor-resource: bundler
+  body: bin/bundle_with_cachestamp.sh
+
+setup-madek:
+  body: bundle exec rake madek:setup:dirs
+  start-when:
+  - script: bundle
+
+

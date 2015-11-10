@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -exu
+
+# starting point of linear history: <https://github.com/Madek/madek-webapp/commit/cc569ffc2e7b2504e548649f4b0739dfeaad8f89>
+START_POINT="cc569ffc2e7b2504e548649f4b0739dfeaad8f89"
+
+# expect no merges between start and now
+test -z $(git rev-list --merges $START_POINT..HEAD)

@@ -1,0 +1,111 @@
+jobs:
+
+ feature-tests:
+
+    name: Feature Tests
+
+    description: |
+      This job contains tests involing the whole stack
+      of the webapp including front end rendering and
+      delivery to a real webbrowser.
+
+    priority: 1
+
+    run-on:
+    - type: branch
+      include-match: ^.*master.*$
+
+    context:
+
+      name: Feature Tests
+
+      script-defaults:
+        template-environment-variables: true
+        timeout: 600
+
+      task-defaults:
+        eager-trials: 1
+        max-auto-trials: 3
+
+        ports:
+          XVNC_PORT:
+            inet_address: "localhost"
+            min: 5900
+            max: 5999
+
+        environment-variables:
+          RBENV_VERSION: 2.1
+          RAILS_ENV: test
+          LANG: "en_US.UTF-8"
+          DISPLAY: ":{{XVNC_PORT}}"
+
+        git-options:
+          submodules:
+            clone: True
+            timeout: 60
+
+        trial-attachments:
+          screenshots:
+            glob: tmp/capybara/*.png
+            content-type: image/png
+          logs:
+            glob: 'log/*.log'
+            content-type: text/plain
+          styleguide_artefacts:
+            glob: 'tmp/styleguide-ref.tar.gz'
+            content-type: application/x-compressed
+          styleguide_hashes_new:
+            glob: 'tmp/styleguide-shasums.txt'
+            content-type: text/plain
+          json_ld_dump:
+            glob: 'tmp/ld_dump.json'
+            content-type: application/json
+
+        traits:
+          firefox-esr: true
+          imagemagick: true
+          linux: true
+          nodejs: true
+          postgresql: true
+          rbenv: true
+          ruby-2.1: true
+          tightvnc: true
+
+
+        scripts:
+
+          _cider-ci_include:
+            - cider-ci/jobs/feature-tests/scripts/prepare.yml
+            - cider-ci/shared/scripts/manage-database.yml
+            - cider-ci/shared/scripts/manage-xvnc.yml
+            - cider-ci/jobs/feature-tests/scripts/test.yml
+
+#         # Just one task, used for prototyping and debuging the Cider-CI
+#         # project config `cider-ci.yml`
+#     tasks:
+#       spec/features/my_dashboard_spec.rb:
+#         environment-variables:
+#           CIDER_CI_TASK_FILE: spec/features/welcome_page_spec.rb
+
+      tasks:
+        spec/features/meta_data/meta_data_institutional_groups_spec.rb:
+          environment-variables:
+            CIDER_CI_TASK_FILE: 'spec/features/meta_data/meta_data_institutional_groups_spec.rb'
+          scripts:
+            setup-config:
+              body: |
+                set -eux
+                echo 'zhdk_integration: true' > 'config/settings.local.yml'
+            test:
+              start-when:
+                setup-config:
+                  script: setup-config
+
+
+      _cider-ci_generate-tasks:
+        include-match: spec/features.*_spec.rb
+
+
+
+
+

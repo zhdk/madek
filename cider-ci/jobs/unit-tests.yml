@@ -1,0 +1,78 @@
+jobs:
+
+  unit-tests:
+
+    name: Unit Tests
+
+    priority: 0
+
+    run-on:
+    - type: branch
+      include-match: ^.*master.*$
+
+    context:
+
+      name: Unit Tests
+
+      description: |
+        This job contains tests involing the ruby runtime
+        and possibly the database.
+
+
+      script-defaults:
+        template-environment-variables: true
+        timeout: 3 Minutes
+
+      task-defaults:
+        eager-trials: 1
+        max-auto-trials: 2
+
+        environment-variables:
+          RBENV_VERSION: 2.1
+          RAILS_ENV: test
+          LANG: "en_US.UTF-8"
+          DISPLAY: ":{{XVNC_PORT}}"
+
+        git-options:
+          submodules:
+            clone: True
+            timeout: 60
+
+        trial-attachments:
+          logs:
+            glob: 'log/*.log'
+            content-type: text/plain
+          styleguide_artefacts:
+            glob: 'tmp/styleguide-ref.tar.gz'
+            content-type: application/x-compressed
+          styleguide_hashes_new:
+            glob: 'tmp/styleguide-shasums.txt'
+            content-type: text/plain
+          json_ld_dump:
+            glob: 'tmp/ld_dump.json'
+            content-type: application/json
+
+        traits:
+          imagemagick: true
+          linux: true
+          nodejs: true
+          postgresql: true
+          rbenv: true
+          ruby-2.1: true
+
+        scripts:
+
+          _cider-ci_include:
+            - cider-ci/jobs/unit-tests/scripts/prepare.yml
+            - cider-ci/shared/scripts/manage-database.yml
+            - cider-ci/jobs/unit-tests/scripts/test.yml
+
+#     tasks:
+#       spec/controllers/import_controller_spec.rb:
+#         environment-variables:
+#           CIDER_CI_TASK_FILE: spec/controllers/import_controller_spec.rb
+
+
+      _cider-ci_generate-tasks:
+        include-match: spec/.*_spec.rb
+        exclude-match: spec/features.*_spec.rb

@@ -1,0 +1,16 @@
+start-xvnc:
+  body: |
+    #!/usr/bin/env bash
+    set -eux
+    tightvncserver "${DISPLAY}"  -geometry 1024x768 -rfbport "$XVNC_PORT"  -interface '0.0.0.0'
+
+stop-xvnc:
+  body: |
+    #!/usr/bin/env bash
+    set -eux
+    tightvncserver -kill "${DISPLAY}" -clean
+  ignore-abort: true
+  ignore-state: true
+  start-when:
+  - script: test
+    states: [aborted, passed, failed, skipped]
