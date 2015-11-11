@@ -108,11 +108,11 @@ class ApplicationController < ActionController::Base
         redirect_to my_dashboard_path
       end
     else
-      @teaser_set = MediaSet.find_by_id @app_settings.teaser_set_id 
+      @teaser_set = MediaSet.find @app_settings.teaser_set_id
       @teaser_set_included_resources = @teaser_set.child_media_resources.accessible_by_user(current_user,:view).shuffle if @teaser_set
-      @featured_set = MediaSet.find_by_id @app_settings.featured_set_id 
+      @featured_set = MediaSet.find @app_settings.featured_set_id
       @featured_set_children = @featured_set.child_media_resources.accessible_by_user(current_user,:view).ordered_by(:updated_at).limit(6) if @featured_set
-      @catalog_set = MediaSet.find_by_id @app_settings.catalog_set_id 
+      @catalog_set = MediaSet.find @app_settings.catalog_set_id 
       @catalog_set_categories = @catalog_set.categories.accessible_by_user(current_user,:view).limit(3) if @catalog_set
       @latest_media_entries = MediaResource.media_entries.accessible_by_user(current_user,:view).ordered_by(:created_at).limit(12)
     end
