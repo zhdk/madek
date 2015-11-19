@@ -10,8 +10,8 @@
       .ui-metadata-box.ui-summary-table.ui-set-summary.compact
         %table.borderless
           %tbody
-            = render :partial => "meta_data/meta_datum", :collection => @media_set.meta_data.for_context(::Context.find("media_set")), 
-                     :locals => {:context => ::Context.find("media_set"), 
+            = render :partial => "meta_data/meta_datum", :collection => @media_set.meta_data.for_context(::Context.find("media_set")),
+                     :locals => {:context => ::Context.find("media_set"),
                                  :as_table => true}
 
   = render :partial => "media_sets/highlights" unless @highlights.blank?
@@ -20,7 +20,7 @@
     - subtitle = n_("%d item", "%d items", @entries_count) % @entries_count
     -# TODO:
     -# - subtitle = @entries_count == @entries_total_count ? n_("%d item", "%d items", @entries_count) % @entries_count : _("%d of %d items visible to you") % [@entries_count, @entries_total_count]
-    = render :partial => "media_resources/list/toolbar", 
+    = render :partial => "media_resources/list/toolbar",
                :locals => {:title => _("Set contains"),
                            :subtitle => subtitle,
                            :actions => render(:partial => "media_sets/actions/save_display_settings")}
@@ -34,14 +34,14 @@
         = render :partial => "media_resources/list/filter"
 
         .ui-container.table-cell.table-substance
-          
+
           %ul#ui-resources-list.ui-resources{:class => ui_resources_class}
 
             .pvh.mth
               .ui-preloader
 
 :coffeescript
-  jQuery -> 
+  jQuery ->
     mediaResourcesController = new App.MediaResourcesController.Index
       baseFilter: #{{:media_set_id => @media_set.id.to_s}.to_json}
       startFilterParams: #{MediaResource.get_filter_params(params).to_json}
@@ -50,5 +50,17 @@
       mediaResourcesController: mediaResourcesController
       layout: #{@media_set.settings[:layout].to_json}
       sorting: #{@media_set.settings[:sorting].to_json}
+
+-# HACK: hide broken filterbar + buttons
+:sass
+  #ui-side-filter
+    display: none
+  .ui-filterbar .left.col2of6
+    &::before
+      content: '.'
+      opacity: 0
+    #ui-side-filter-toggle, #ui-side-filter-reset
+      display: none
+
 
 = render :partial => "media_sets/layout"
